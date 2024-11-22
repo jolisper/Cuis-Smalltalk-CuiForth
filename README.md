@@ -2,7 +2,7 @@
 CuiForth is a Forth language interpreter built on Smalltalk, featuring an interactive REPL. It adheres to the Forth Standard while allowing space for creative and implementation-specific words, blending the flexibility of Forth with Smalltalk's powerful object-oriented environment.
 
 ## Smalltalk meets Forth (Series)
-This repository is paired with a series of articles explaining the implementation of this Forth interpreter. The fulle series list ([link](https://medium.com/@jolisper/list/smalltalk-meets-forth-series-1bc378583d43)).
+This repository is paired with a series of articles explaining the implementation of this Forth interpreter. The full series list ([link](https://medium.com/@jolisper/list/smalltalk-meets-forth-series-1bc378583d43)).
 
 [Smalltalk meets Forth: Episode I](https://medium.com/@jolisper/smalltalk-meets-forth-episode-i-4ca949da9448?source=friends_link&sk=791848eefc25714e1287c174290b8254): For this first session we would like to end with a fully working Forth REPL with at least some of the basic math words implemented. Also, a pretty basic error handling would be good to have from the beginning.
 
