@@ -4,7 +4,7 @@ CuiForth is a Forth language interpreter built on Smalltalk, featuring an intera
 ## Smalltalk meets Forth (Series)
 This repository is paired with a series of articles explaining the implementation of this Forth interpreter. The full series list ([link](https://medium.com/@jolisper/list/smalltalk-meets-forth-series-1bc378583d43)).
 
-[Smalltalk meets Forth: Episode I](https://medium.com/@jolisper/smalltalk-meets-forth-episode-i-4ca949da9448?source=friends_link&sk=791848eefc25714e1287c174290b8254): For this first session we would like to end with a fully working Forth REPL with at least some of the basic math words implemented. Also, a pretty basic error handling would be good to have from the beginning.
+[Smalltalk meets Forth: Episode I](https://medium.com/@jolisper/smalltalk-meets-forth-episode-i-4ca949da9448?source=friends_link&sk=791848eefc25714e1287c174290b8254): For this first session we would like to end with a fully working Forth REPL with at least some of the basic math words implemented. Also, a pretty basic error handling would be good to have from the beginning. ([v0.0.1](https://github.com/jolisper/Cuis-Smalltalk-CuiForth/releases/tag/v0.0.1))
 
 ## Installation
 CuiForth is a package for Cuis-Smalltalk. So, clone this repository or copy the `CuiForth.pck.st` file into the directory of your choice.
