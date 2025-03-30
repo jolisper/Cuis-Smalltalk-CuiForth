@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6820] on 20 November 2024 at 3:06:02 pm'!
+'From Cuis7.3 [latest update: #7092] on 30 March 2025 at 2:03:44 pm'!
 'Description CuiForth is a Forth language interpreter with an interactive REPL. It adheres to the Forth Standard while leaving space for creative and implementation-specific words.'!
-!provides: 'CuiForth' 1 39!
+!provides: 'CuiForth' 1 40!
 SystemOrganization addCategory: #'CuiForth-Morph'!
 SystemOrganization addCategory: #'CuiForth-Windows'!
 SystemOrganization addCategory: #'CuiForth-Interpreter'!
@@ -38,6 +38,16 @@ Object subclass: #ForthToken
 	category: 'CuiForth-Interpreter'!
 !classDefinition: 'ForthToken class' category: #'CuiForth-Interpreter'!
 ForthToken class
+	instanceVariableNames: ''!
+
+!classDefinition: #ComparisonOperatorToken category: #'CuiForth-Interpreter'!
+ForthToken subclass: #ComparisonOperatorToken
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'CuiForth-Interpreter'!
+!classDefinition: 'ComparisonOperatorToken class' category: #'CuiForth-Interpreter'!
+ComparisonOperatorToken class
 	instanceVariableNames: ''!
 
 !classDefinition: #DotWordToken category: #'CuiForth-Interpreter'!
@@ -231,6 +241,45 @@ dot
 drop
 	^ dataStack pop! !
 
+!ForthInterpreter methodsFor: 'forth-core' stamp: 'jlp 3/29/2025 20:50:54'!
+equal
+	| first second |
+	first := dataStack pop.
+	second := dataStack pop.
+	dataStack push: (first = second ifTrue: [ -1 ] ifFalse: [ 0 ]).! !
+
+!ForthInterpreter methodsFor: 'forth-core' stamp: 'jlp 3/30/2025 01:04:05'!
+equalToZero
+	| value |
+	value := dataStack pop.
+	dataStack push: (value = 0 ifTrue: [ -1 ] ifFalse: [ 0 ]).! !
+
+!ForthInterpreter methodsFor: 'forth-core' stamp: 'jlp 3/29/2025 21:55:32'!
+greaterThan
+	| first second |
+	first := dataStack pop.
+	second := dataStack pop.
+	dataStack push: (second > first ifTrue: [ -1 ] ifFalse: [ 0 ]).! !
+
+!ForthInterpreter methodsFor: 'forth-core' stamp: 'jlp 3/30/2025 01:37:23'!
+greaterThanZero
+	| value |
+	value := dataStack pop.
+	dataStack push: (value > 0 ifTrue: [ -1 ] ifFalse: [ 0 ]).! !
+
+!ForthInterpreter methodsFor: 'forth-core' stamp: 'jlp 3/30/2025 00:50:46'!
+lessThan
+	| first second |
+	first := dataStack pop.
+	second := dataStack pop.
+	dataStack push: (second < first ifTrue: [ -1 ] ifFalse: [ 0 ]).! !
+
+!ForthInterpreter methodsFor: 'forth-core' stamp: 'jlp 3/30/2025 01:42:00'!
+lessThanZero
+	| value |
+	value := dataStack pop.
+	dataStack push: (value < 0 ifTrue: [ -1 ] ifFalse: [ 0 ]).! !
+
 !ForthInterpreter methodsFor: 'forth-core' stamp: 'jlp 11/8/2024 10:34:45'!
 minus
 	| first second |
@@ -312,8 +361,8 @@ tokenize: aString
 	^ textWords collect: [ :textWord |
 		ForthToken newFrom: textWord ]! !
 
-!ForthInterpreter methodsFor: 'error handling' stamp: 'jlp 11/6/2024 17:07:13'!
-doesNotUnderstand: aMessage
+!ForthInterpreter methodsFor: 'error handling' stamp: 'jlp 3/30/2025 00:47:28'!
+doesNotUnderstandBkp: aMessage
 	UndefinedWord signal! !
 
 !ForthToken methodsFor: 'private' stamp: 'jlp 11/12/2024 14:08:58'!
@@ -345,6 +394,31 @@ tokenTypes
 !ForthToken class methodsFor: 'ordering' stamp: 'jlp 11/20/2024 15:04:41'!
 tokenizeOrder
 	self subclassResponsibility ! !
+
+!ComparisonOperatorToken class methodsFor: 'as yet unclassified' stamp: 'jlp 3/29/2025 19:25:07'!
+comparisonOperators
+	^ `Dictionary newFrom: {
+		'=' -> #equal.
+		'>' -> #greaterThan.
+		'<' -> #lessThan.
+		'0=' -> #equalToZero.
+		'0>' -> #greaterThanZero.
+		'0<' -> #lessThanZero.
+	}`! !
+
+!ComparisonOperatorToken class methodsFor: 'as yet unclassified' stamp: 'jlp 3/29/2025 19:26:17'!
+ifMatch: aStringWord eval: aTokenBlock
+	(self comparisonOperators includesKey: aStringWord) ifTrue: 
+		[ aTokenBlock value: (self newFrom: aStringWord) ].! !
+
+!ComparisonOperatorToken class methodsFor: 'as yet unclassified' stamp: 'jlp 3/29/2025 19:30:38'!
+newFrom: aString
+	^ self new
+		value: (self comparisonOperators at: aString) asSymbol! !
+
+!ComparisonOperatorToken class methodsFor: 'as yet unclassified' stamp: 'jlp 3/29/2025 19:29:24'!
+tokenizeOrder
+	^ 4! !
 
 !DotWordToken class methodsFor: 'instance creation' stamp: 'jlp 11/15/2024 09:52:10'!
 ifMatch: aStringWord eval: aTokenBlock
@@ -429,9 +503,9 @@ ifMatch: aStringWord eval: aTokenBlock
 	^ aStringWord isString ifTrue: 
 		[ aTokenBlock value: (self newFrom: aStringWord) ]! !
 
-!WordToken class methodsFor: 'sorting' stamp: 'jlp 11/15/2024 12:15:42'!
+!WordToken class methodsFor: 'sorting' stamp: 'jlp 3/29/2025 19:31:14'!
 tokenizeOrder
- 	^ 4! !
+ 	^ 5! !
 
 !WordToken class methodsFor: 'private' stamp: 'jlp 11/18/2024 14:31:39'!
 newFrom: aString
@@ -599,6 +673,134 @@ testDotSWord
 	forth execute: '3 2 1 3 2 1'.
 	forth execute: '.s'.
 	self assert: forth displayMessage equals: '  <6> 3 2 1 3 2 1  ok'! !
+
+!ForthInterpreterTest methodsFor: 'as yet unclassified' stamp: 'jlp 3/29/2025 20:43:46'!
+testEqualTestOfDifferentValues
+	| forth |
+	forth := ForthInterpreter new.
+	forth execute: '10 5 ='.
+	self assert: forth drop equals: 0.
+	! !
+
+!ForthInterpreterTest methodsFor: 'as yet unclassified' stamp: 'jlp 3/29/2025 20:42:31'!
+testEqualTestOfEqualValues
+	| forth |
+	forth := ForthInterpreter new.
+	forth execute: '10 10 ='.
+	self assert: forth drop equals: -1.
+	! !
+
+!ForthInterpreterTest methodsFor: 'as yet unclassified' stamp: 'jlp 3/30/2025 01:05:05'!
+testEqualZeroWithNonZeroValue
+	| forth |
+	forth := ForthInterpreter new.
+	forth execute: '1 0='.
+	self assert: forth drop equals: 0.
+	! !
+
+!ForthInterpreterTest methodsFor: 'as yet unclassified' stamp: 'jlp 3/30/2025 01:01:44'!
+testEqualZeroWithValueZero
+	| forth |
+	forth := ForthInterpreter new.
+	forth execute: '0 0='.
+	self assert: forth drop equals: -1.
+	! !
+
+!ForthInterpreterTest methodsFor: 'as yet unclassified' stamp: 'jlp 3/29/2025 21:35:17'!
+testGreaterThanTestWhenGreaterAndLessValues
+	| forth |
+	forth := ForthInterpreter new.
+	forth execute: '10 5 >'.
+	self assert: forth drop equals: -1.
+	! !
+
+!ForthInterpreterTest methodsFor: 'as yet unclassified' stamp: 'jlp 3/29/2025 22:02:22'!
+testGreaterThanTestWhenLessAndGreaterValues
+	| forth |
+	forth := ForthInterpreter new.
+	forth execute: '5 10 >'.
+	self assert: forth drop equals: 0.
+	! !
+
+!ForthInterpreterTest methodsFor: 'as yet unclassified' stamp: 'jlp 3/29/2025 22:03:17'!
+testGreaterThanTestWithEqualsValues
+	| forth |
+	forth := ForthInterpreter new.
+	forth execute: '10 10 >'.
+	self assert: forth drop equals: 0.
+	! !
+
+!ForthInterpreterTest methodsFor: 'as yet unclassified' stamp: 'jlp 3/30/2025 01:35:17'!
+testGreaterThanZeroWithGreaterValue
+	| forth |
+	forth := ForthInterpreter new.
+	forth execute: '1 0>'.
+	self assert: forth drop equals: -1.
+	! !
+
+!ForthInterpreterTest methodsFor: 'as yet unclassified' stamp: 'jlp 3/30/2025 01:39:12'!
+testGreaterThanZeroWithLessValue
+	| forth |
+	forth := ForthInterpreter new.
+	forth execute: '-1 0>'.
+	self assert: forth drop equals: 0.
+	! !
+
+!ForthInterpreterTest methodsFor: 'as yet unclassified' stamp: 'jlp 3/30/2025 01:39:36'!
+testGreaterThanZeroWithZero
+	| forth |
+	forth := ForthInterpreter new.
+	forth execute: '0 0>'.
+	self assert: forth drop equals: 0.
+	! !
+
+!ForthInterpreterTest methodsFor: 'as yet unclassified' stamp: 'jlp 3/29/2025 22:07:27'!
+testLessThanTestWhenGreaterAndLessValues
+	| forth |
+	forth := ForthInterpreter new.
+	forth execute: '10 5 <'.
+	self assert: forth drop equals: 0.
+	! !
+
+!ForthInterpreterTest methodsFor: 'as yet unclassified' stamp: 'jlp 3/30/2025 00:52:07'!
+testLessThanTestWhenLessAndGreaterValues
+	| forth |
+	forth := ForthInterpreter new.
+	forth execute: '5 10 <'.
+	self assert: forth drop equals: -1.
+	! !
+
+!ForthInterpreterTest methodsFor: 'as yet unclassified' stamp: 'jlp 3/30/2025 00:52:59'!
+testLessThanTestWithEqualsValues
+	| forth |
+	forth := ForthInterpreter new.
+	forth execute: '10 10 <'.
+	self assert: forth drop equals: 0.
+	! !
+
+!ForthInterpreterTest methodsFor: 'as yet unclassified' stamp: 'jlp 3/30/2025 01:41:07'!
+testLessThanZeroWithGreaterValue
+	| forth |
+	forth := ForthInterpreter new.
+	forth execute: '1 0<'.
+	self assert: forth drop equals: 0.
+	! !
+
+!ForthInterpreterTest methodsFor: 'as yet unclassified' stamp: 'jlp 3/30/2025 01:42:30'!
+testLessThanZeroWithLessValue
+	| forth |
+	forth := ForthInterpreter new.
+	forth execute: '-1 0<'.
+	self assert: forth drop equals: -1.
+	! !
+
+!ForthInterpreterTest methodsFor: 'as yet unclassified' stamp: 'jlp 3/30/2025 01:42:54'!
+testLessThanZeroWithZero
+	| forth |
+	forth := ForthInterpreter new.
+	forth execute: '0 0<'.
+	self assert: forth drop equals: 0.
+	! !
 
 !ForthInterpreterTest methodsFor: 'as yet unclassified' stamp: 'jlp 10/23/2024 17:14:09'!
 testMultiplyTwoNumbers
