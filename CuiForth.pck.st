@@ -1,6 +1,6 @@
-'From Cuis7.3 [latest update: #7092] on 30 March 2025 at 2:03:44 pm'!
+'From Cuis7.5 [latest update: #7689] on 14 November 2025 at 1:34:23 pm'!
 'Description CuiForth is a Forth language interpreter with an interactive REPL. It adheres to the Forth Standard while leaving space for creative and implementation-specific words.'!
-!provides: 'CuiForth' 1 40!
+!provides: 'CuiForth' 1 41!
 SystemOrganization addCategory: #'CuiForth-Morph'!
 SystemOrganization addCategory: #'CuiForth-Windows'!
 SystemOrganization addCategory: #'CuiForth-Interpreter'!
@@ -511,7 +511,7 @@ tokenizeOrder
 newFrom: aString
 	^ self new value: aString asLowercase asSymbol! !
 
-!ForthREPL methodsFor: 'initialization' stamp: 'jlp 11/11/2024 20:11:34'!
+!ForthREPL methodsFor: 'initialization' stamp: 'jlp 11/14/2025 13:32:06'!
 initialize
 	| forthModelMorph forthModel |
  	super initialize.
@@ -519,6 +519,12 @@ initialize
  	forthModel := ForthModel new.
  	forthModelMorph := ForthModelMorph new.
  
+ 	"Main window configuration"
+ 	window := SystemWindow new
+     		setLabel: 'CuiForth REPL';
+     		model: forthModel;
+     		addMorph: forthModelMorph.
+
  	"Connnect the models"
  	forthModelMorph model: forthModel.
  
@@ -527,11 +533,7 @@ initialize
 		proportionalWidth: 1.0;
 		proportionalHeight: 1.0.
  
- 	"Main window configuration"
- 	window := SystemWindow new
-     		setLabel: 'CuiForth REPL';
-     		model: forthModel;
-     		addMorph: forthModelMorph.
+
 ! !
 
 !ForthREPL methodsFor: 'morphic' stamp: 'jlp 10/25/2024 18:21:18'!
