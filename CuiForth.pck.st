@@ -603,6 +603,13 @@ mouseButton1Down: aMouseButtonEvent localPosition: localEventPosition
 mouseMove: aMouseMoveEvent localPosition: localEventPosition
 	"The mouse selection could make some problems. Just ignore this event"! !
 
+!ForthInnerTextMorph methodsFor: 'menu' stamp: 'jlp 10/25/2026 15:00:00'!
+menuNshortcutsSpecsDo: aBlock
+	"Add a 'Restart REPL' entry at the top of the standard text editor menu (ids 0 and 10 are the title and Help)"
+	super menuNshortcutsSpecsDo: aBlock.
+	aBlock value: #(5 'Restart REPL' nil editor restart refreshIcon 'Clear the screen and reset the data stack').
+	aBlock value: #(6 '-')! !
+
 !ForthEditor methodsFor: 'initialization' stamp: 'jlp 11/12/2024 13:19:09'!
 initialize
 	super initialize.
@@ -635,6 +642,15 @@ processWords
 	self extractWords;
 		executeWords;
 		printMessageToUser ! !
+
+!ForthEditor methodsFor: 'menu' stamp: 'jlp 10/25/2026 15:00:00'!
+restart
+	interpreter := ForthInterpreter new.
+	model actualContents: ''.
+	"Saving the contents relabels the window with the file path and remembers it; forget both"
+	morph owningWindow ifNotNil: [ :window |
+		window setLabel: 'CuiForth REPL'.
+		window removeProperty: #lastFilenameUsedToSave ]! !
 
 !ForthInterpreterTest methodsFor: 'as yet unclassified' stamp: 'jlp 10/22/2024 22:45:16'!
 testAddTwoNumbers
